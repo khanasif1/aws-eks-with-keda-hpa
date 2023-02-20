@@ -1,0 +1,18 @@
+Creating an IAM OIDC provider for your cluster
+===============================================
+
+https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html
+
+Create role
+=============
+
+https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html#irsa-create-role
+
+Configuring pods to use a Kubernetes service account
+====================================================
+
+https://docs.aws.amazon.com/eks/latest/userguide/pod-configuration.html
+
+eksctl create iamserviceaccount --name keda-service-account --namespace keda --cluster eks-keda-scale --role-name "keda-sql-role" \
+    --attach-policy-arn arn:aws:iam::809980971988:policy/keda-sqs-policy --approve
+
