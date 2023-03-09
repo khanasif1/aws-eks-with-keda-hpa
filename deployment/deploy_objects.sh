@@ -25,23 +25,21 @@ kubectl describe deployment keda-operator-metrics-apiserver  -n keda | grep "Ser
 kubectl create deployment nginx-deployment --image nginx -n keda-test
 # kubectl delete deployment nginx-deployment  -n keda-test 
 
-kubectl apply -f keda-scaleobject.yaml
+kubectl apply -f keda-configure/keda-scaleobject.yaml
 
 #kubectl delete scaledobject aws-sqs-queue-scaledobject -n keda-test 
 #kubectl delete triggerauth keda-aws-credentials -n keda-test 
 
 # Deploy python app - it reads the SQS
 
+kubectl apply -f deployment/python-app.yaml
+kubectl delete deployment sqs-app  -n keda-test    
 
+kubectl delete deployment  nginx-deployment -n keda-test    
 
-
-
-
-
-
-
-
-
+k get pods -n keda-test  
+kubectl describe -p sqs-app-76d4d957b6-674tq   -n keda-test| grep AWS_ROLE_ARN:  
+k logs pod sqs-app-76d4d957b6-674tq -n keda-test 
 
 
 
