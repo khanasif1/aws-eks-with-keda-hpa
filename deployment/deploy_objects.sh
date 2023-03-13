@@ -42,4 +42,4 @@ kubectl describe -p sqs-app-76d4d957b6-674tq   -n keda-test| grep AWS_ROLE_ARN:
 k logs pod sqs-app-76d4d957b6-674tq -n keda-test 
 
 
-
+kubectl logs -f sqs-app-94f65b8d9-g2xd9 -n keda-test 

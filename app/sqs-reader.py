@@ -1,6 +1,6 @@
 import boto3
 import json
-
+import time
 # create a function to add numbers
 
 queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/keda-queue"
@@ -41,6 +41,16 @@ def receive_message():
         )
     print("End fn receive message")
 
-print("Start SQS Call")
-receive_message()
-print("End SQS Call")
+starttime = time.time()
+while True:
+    t = time.localtime()
+    time.sleep(5.0 - ((time.time() - starttime) % 5.0))
+    currenttime = time.strftime("%H:%M:%S", t)
+    print(f"Start SQS Call : {currenttime}")
+    receive_message()
+    '''i = 0
+    while i < 20:
+        i = i+1'''
+    currenttime = time.strftime("%H:%M:%S", t)
+    print(f"End SQS Call {currenttime}")
+    #time.sleep(5)
