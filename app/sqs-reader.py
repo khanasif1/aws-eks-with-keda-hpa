@@ -44,7 +44,7 @@ def receive_message():
 starttime = time.time()
 while True:
     t = time.localtime()
-    time.sleep(5.0 - ((time.time() - starttime) % 5.0))
+    time.sleep(15.0 - ((time.time() - starttime) % 15.0)) #sleep for 15 sec
     currenttime = time.strftime("%H:%M:%S", t)
     print(f"Start SQS Call : {currenttime}")
     receive_message()

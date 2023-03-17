@@ -33,9 +33,9 @@ kubectl apply -f keda-configure/keda-scaleobject.yaml
 # Deploy python app - it reads the SQS
 
 kubectl apply -f deployment/python-app.yaml
-kubectl delete deployment sqs-app  -n keda-test    
+#kubectl delete deployment sqs-app  -n keda-test    
 
-kubectl delete deployment  nginx-deployment -n keda-test    
+#kubectl delete deployment  nginx-deployment -n keda-test    
 
 k get pods -n keda-test  
 kubectl describe -p sqs-app-76d4d957b6-674tq   -n keda-test| grep AWS_ROLE_ARN:  
