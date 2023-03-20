@@ -4,26 +4,41 @@
 kubectl config set-context –current –namespace=keda
 #Configuring a Kubernetes service account to assume an IAM role
 
-# Create Policy to access AWS Services
+# Create Policy to access AWS SQS Services
 cat >my-policy.json <<EOF
 {
     "Version": "2012-10-17",
     "Statement": [
         {
             "Effect": "Allow",
-            "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::my-pod-secrets-bucket"
+            "Action": "sqs:*",
+            "Resource": "arn:aws:sqs:us-west-1:809980971988:keda-queue"
         }
     ]
 }
 EOF
 aws iam create-policy --policy-name keda-sqs-policy --policy-document file://my-policy.json
 
+# Create Policy to access AWS Dynamo Services
+cat >dynamo-policy.json <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "dynamodb:*",
+            "Resource": "*"
+        }
+    ]
+}
+EOF
+aws iam create-policy --policy-name keda-dynamo-policy --policy-document file://dynamo-policy.json
+
 # Create Service Account IAM
 eksctl create iamserviceaccount --name keda-service-account --region us-west-1 --namespace keda --cluster eks-keda-scale --role-name "keda-sqs-role"  --attach-policy-arn arn:aws:iam::809980971988:policy/keda-sqs-policy --approve
 aws iam get-role --role-name keda-sqs-role --query Role.AssumeRolePolicyDocument
 #Check policies
-aws iam list-attached-role-policies --role-name kedsqs-role --query AttachedPolicies[].PolicyArn --output text
+aws iam list-attached-role-policies --role-name keda-sqs-role --query AttachedPolicies[].PolicyArn --output text
 
 #Create service
 cat >keds-service-account.yaml <<EOF
@@ -86,6 +101,8 @@ cat trust-relationship.json
 aws iam create-role --role-name keda-role --assume-role-policy-document file://trust-relationship1.json --description "keda role-description"
 
 aws iam attach-role-policy --role-name keda-role --policy-arn=arn:aws:iam::809980971988:policy/keda-sqs-policy
+
+aws iam attach-role-policy --role-name keda-role --policy-arn=arn:aws:iam::809980971988:policy/keda-dynamo-policy
 
 kubectl annotate serviceaccount -n keda keda-service-account eks.amazonaws.com/role-arn=arn:aws:iam::$account_id:role/keda-role
 

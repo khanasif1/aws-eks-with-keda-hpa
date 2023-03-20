@@ -30,7 +30,7 @@ kubectl apply -f keda-configure/keda-scaleobject.yaml
 #kubectl delete scaledobject aws-sqs-queue-scaledobject -n keda-test 
 #kubectl delete triggerauth keda-aws-credentials -n keda-test 
 
-# Deploy python app - it reads the SQS
+# Deploy python app - it reads the SQS  and put message in dynamo
 
 kubectl apply -f deployment/python-app.yaml
 #kubectl delete deployment sqs-app  -n keda-test    
@@ -42,4 +42,4 @@ kubectl describe -p sqs-app-76d4d957b6-674tq   -n keda-test| grep AWS_ROLE_ARN:
 k logs pod sqs-app-76d4d957b6-674tq -n keda-test 
 
 
-kubectl logs -f sqs-app-94f65b8d9-g2xd9 -n keda-test 
+kubectl logs -f sqs-app-597c4bf64d-d5d4t -n keda-test 
