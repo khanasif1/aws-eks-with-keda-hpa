@@ -117,7 +117,7 @@ aws iam get-policy --policy-arn $policy_arn
 
 aws iam get-policy-version --policy-arn $policy_arn --version-id v1
 
-#Configuring pods to use a Kubernetes service account
+#Dummy test Configuring pods to use a Kubernetes service account
 #=====================================================
 cat >keda-pod-deployment.yaml <<EOF
 apiVersion: apps/v1
