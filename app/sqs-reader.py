@@ -2,6 +2,8 @@ import boto3
 import json
 import time
 import uuid
+from datetime import datetime
+
 # create a function to add numbers
 starttime = time.time()
 
@@ -50,6 +52,9 @@ def receive_message():
 
 def save_data(_message):
     try:
+        #current_dateTime = json.dumps(datetime.now(),default= str)
+        date_format = '%Y-%m-%d %H:%M:%S.%f'
+        current_dateTime = datetime.now().strftime(date_format)
         _id=str(uuid.uuid1())
         print(f"id:{_id}")
         dynamodb = boto3.resource('dynamodb', region_name="us-west-1")
@@ -58,7 +63,8 @@ def save_data(_message):
         response = table.put_item(
             Item={
             'id': _id,
-            'data': _message
+            'data': _message,
+            'stamp':current_dateTime
             }
         )
         status_code = response['ResponseMetadata']['HTTPStatusCode']
@@ -77,6 +83,16 @@ while True:
 
     receive_message()
     #save_data("hi there")
+
+    ## Date format working
+    #date_format = '%Y-%m-%d %H:%M:%S.%f'
+    #currentDateAndTime = datetime.now().strftime(date_format)#"2023-03-23 17:49:25.651555"
+    #currentDateAndTime = '2023-03-23 18:38:42.536417'
+    #print("The current date and time is", currentDateAndTime)
+    #currentDate = datetime.strptime(currentDateAndTime, date_format)
+    #x = datetime.now() - currentDate
+    #print("diff",x)
+    #print("The current time is", currentDate)
     '''i = 0
     while i < 20:
         i = i+1'''
