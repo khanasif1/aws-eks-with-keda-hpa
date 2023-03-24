@@ -7,8 +7,9 @@ from datetime import datetime
 # create a function to add numbers
 starttime = time.time()
 
-queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/keda-queue"
-
+#queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/keda-queue"
+queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/testqueue.fifo"
+        
 
 def receive_message():
     try:
@@ -24,7 +25,7 @@ def receive_message():
             'All'
             ],
             WaitTimeSeconds=0,
-            VisibilityTimeout=0
+            VisibilityTimeout=60
         )
         print(f"Number of messages received: {len(response.get('Messages', []))}")
         
@@ -34,10 +35,10 @@ def receive_message():
             message_body = message["Body"]
             print(f"message_body : {message_body}")
 
-            save_data(message_body)
-
             receipt_handle = message['ReceiptHandle']
             
+            save_data(message_body)
+
             print(f"Receipt Handle: {message['ReceiptHandle']}")
             print(f"Deleting Message : {message_body}")
             # Delete received message from queue
@@ -45,6 +46,8 @@ def receive_message():
                 QueueUrl=queue_url,
                 ReceiptHandle=receipt_handle
             )
+
+            
         print("End fn receive message")
     except Exception as ex:
         print(f"Error happened in receive_message : {ex} ")
@@ -52,6 +55,9 @@ def receive_message():
 
 def save_data(_message):
     try:
+        print(f'save data src msg :{_message}')
+        jsonMessage = json.loads(_message)
+        print(f'Src Message :{jsonMessage["msg"]},{jsonMessage["srcStamp"]}')
         #current_dateTime = json.dumps(datetime.now(),default= str)
         date_format = '%Y-%m-%d %H:%M:%S.%f'
         current_dateTime = datetime.now().strftime(date_format)
@@ -59,12 +65,18 @@ def save_data(_message):
         print(f"id:{_id}")
         dynamodb = boto3.resource('dynamodb', region_name="us-west-1")
         table = dynamodb.Table('payments')
+        
+        
+        messageProcessingTime = datetime.now() - datetime.strptime(jsonMessage["srcStamp"],date_format) 
+        print(f'messageProcessingTime: {messageProcessingTime}')
 
         response = table.put_item(
             Item={
             'id': _id,
-            'data': _message,
-            'stamp':current_dateTime
+            'data': jsonMessage["msg"],
+            'srcStamp':jsonMessage["srcStamp"],
+            'destStamp':current_dateTime,
+            'messageProcessingTime':str(messageProcessingTime)
             }
         )
         status_code = response['ResponseMetadata']['HTTPStatusCode']
