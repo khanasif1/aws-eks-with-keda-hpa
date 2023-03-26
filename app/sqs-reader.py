@@ -60,7 +60,7 @@ def save_data(_message):
         print(f'Src Message :{jsonMessage["msg"]},{jsonMessage["srcStamp"]}')
         #current_dateTime = json.dumps(datetime.now(),default= str)
         date_format = '%Y-%m-%d %H:%M:%S.%f'
-        current_dateTime = datetime.now().strftime(date_format)
+        current_dateTime = datetime.utcnow().strftime(date_format)
         _id=str(uuid.uuid1())
         print(f"id:{_id}")
         dynamodb = boto3.resource('dynamodb', region_name="us-west-1")
