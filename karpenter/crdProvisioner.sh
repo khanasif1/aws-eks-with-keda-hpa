@@ -11,8 +11,8 @@ spec:
       operator: In
       values: ["spot"]
     - key: karpenter.k8s.aws/instance-size
-      operator: NotIn
-      values: [nano, micro, small, medium, large]
+      operator: In
+      values: [large]
   limits:
     resources:
       cpu: 1000
@@ -21,6 +21,7 @@ spec:
   ttlSecondsUntilExpired: 2592000
   providerRef:
     name: default
+EOF
 ---
 apiVersion: karpenter.k8s.aws/v1alpha1
 kind: AWSNodeTemplate
