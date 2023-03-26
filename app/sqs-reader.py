@@ -8,7 +8,7 @@ from datetime import datetime
 starttime = time.time()
 
 #queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/keda-queue"
-queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/testqueue.fifo"
+queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/keda-queue.fifo"
         
 
 def receive_message():
@@ -67,8 +67,8 @@ def save_data(_message):
         table = dynamodb.Table('payments')
         
         
-        messageProcessingTime = datetime.now() - datetime.strptime(jsonMessage["srcStamp"],date_format) 
-        print(f'messageProcessingTime: {messageProcessingTime}')
+        messageProcessingTime = datetime.utcnow() - datetime.strptime(jsonMessage["srcStamp"],date_format) 
+        print(f'messageProcessingTime: {messageProcessingTime.total_seconds()}')
 
         response = table.put_item(
             Item={
@@ -76,7 +76,7 @@ def save_data(_message):
             'data': jsonMessage["msg"],
             'srcStamp':jsonMessage["srcStamp"],
             'destStamp':current_dateTime,
-            'messageProcessingTime':str(messageProcessingTime)
+            'messageProcessingTime':str(messageProcessingTime.total_seconds())
             }
         )
         status_code = response['ResponseMetadata']['HTTPStatusCode']
