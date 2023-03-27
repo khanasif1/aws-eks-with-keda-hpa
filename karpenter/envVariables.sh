@@ -2,6 +2,7 @@
 
 export KARPENTER_VERSION=v0.20.0 # latest: v0.26.1
 export CLUSTER_NAME=eks-keda-scale 
+#export CLUSTER_NAME=eks-karpenter-scale 
 
 
 export REGION=us-west-1

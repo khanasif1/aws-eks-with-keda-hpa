@@ -21,7 +21,6 @@ spec:
   ttlSecondsUntilExpired: 2592000
   providerRef:
     name: default
-EOF
 ---
 apiVersion: karpenter.k8s.aws/v1alpha1
 kind: AWSNodeTemplate
