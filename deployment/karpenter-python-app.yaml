@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sqs-app
+  namespace: karpenter-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sqs-reader
+  template:
+    metadata:
+      labels:
+        app: sqs-reader
+    spec:
+      serviceAccountName: karpenter-service-account
+      containers:
+      - name: sqs-pull-app
+        image: khanasif1/karpenter-sqs-reader:v0.2
+        imagePullPolicy: Always

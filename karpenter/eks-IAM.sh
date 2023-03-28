@@ -41,16 +41,25 @@ cat >dynamo-policy.json <<EOF
 EOF
 aws iam create-policy --policy-name karpenter-dynamo-policy --policy-document file://dynamo-policy.json
 
-# Create Service Account IAM
-#eksctl create iamserviceaccount --name karpenter-service-account --region $REGION --namespace karpenter --cluster eks-karpenter-scale --role-name "karpenter-pod-role"  --attach-policy-arn arn:aws:iam::$account_id:policy/karpenter-sqs-policy --approve
-aws iam get-role --role-name karpenter-pod-role --query Role.AssumeRolePolicyDocument
+kubectl create namespace -name karpenter-test
 
-aws iam attach-role-policy --policy-arn arn:aws:iam::809980971988:policy/karpenter-dynamo-policy --role-name karpenter-sqs-role
+#############################
+#******EKSCTL****************
+#############################
+#Create Service Account IAM
+#eksctl create iamserviceaccount --name karpenter-service-account --region $REGION --namespace karpenter --cluster eks-karpenter-scale --role-name "karpenter-pod-role"  --attach-policy-arn arn:aws:iam::$account_id:policy/karpenter-sqs-policy --approve
+#aws iam get-role --role-name karpenter-pod-role --query Role.AssumeRolePolicyDocument
+
+#aws iam attach-role-policy --policy-arn arn:aws:iam::809980971988:policy/karpenter-dynamo-policy --role-name karpenter-sqs-role
 
 #Check policies
-aws iam list-attached-role-policies --role-name karpenter-sqs-role --query AttachedPolicies[].PolicyArn --output text
-######Pending
-kubectl create namespace -name karpenter-test
+#aws iam list-attached-role-policies --role-name karpenter-sqs-role --query AttachedPolicies[].PolicyArn --output text
+
+
+
+#############################
+#******AWS CLI****************
+#############################
 #Create service
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
@@ -61,11 +70,11 @@ metadata:
 EOF
 kubectl apply -f my-service-account.yaml
 
+$provide = $oidc_provider+":aud"
 cat >trust-relationship.json <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
-    {
       {
         "Effect": "Allow",
         "Principal": {
@@ -74,71 +83,74 @@ cat >trust-relationship.json <<EOF
         "Action": "sts:AssumeRoleWithWebIdentity",
         "Condition": {
           "StringEquals": {
-            "$oidc_provider: aud": "sts.amazonaws.com",
-            "$oidc_provider: sub": "system:serviceaccount:$namespace:$service_account"
+            "${oidc_provider}:aud": "sts.amazonaws.com",
+            "${oidc_provider}:sub": "system:serviceaccount:$namespace:$service_account"
           }
         }
-      }
-    }
+      }   
   ]
 }
 EOF
 
-aws iam create-role --role-name keda-role --assume-role-policy-document file://trust-relationship1.json --description "karpenter role-description"
+#Create role
+aws iam create-role --role-name karpenter-pod-role --assume-role-policy-document file://trust-relationship.json --description "karpenter role-description"
 
-aws iam attach-role-policy --role-name keda-role --policy-arn=arn:aws:iam::809980971988:policy/keda-sqs-policy
+#Attach policy to role SQS
+aws iam attach-role-policy --role-name karpenter-pod-role --policy-arn=arn:aws:iam::$account_id:policy/karpenter-sqs-policy
+#Attach policy to role Dynamo
+aws iam attach-role-policy --role-name karpenter-pod-role --policy-arn=arn:aws:iam::$account_id:policy/karpenter-dynamo-policy
 
-aws iam attach-role-policy --role-name keda-role --policy-arn=arn:aws:iam::809980971988:policy/keda-dynamo-policy
+#Add role to K8s service account
+kubectl annotate serviceaccount -n $namespace karpenter-service-account eks.amazonaws.com/role-arn=arn:aws:iam::$account_id":role/karpenter-pod-role"
 
-kubectl annotate serviceaccount -n keda karpenter-service-account eks.amazonaws.com/role-arn=arn:aws:iam::$account_id:role/karpenter-role
+aws iam get-role --role-name karpenter-pod-role  --query Role.AssumeRolePolicyDocument
 
-aws iam get-role --role-name keda-role  --query Role.AssumeRolePolicyDocument
+aws iam list-attached-role-policies --role-name karpenter-pod-role --output text
 
-aws iam list-attached-role-policies --role-name keda-role --output text
-
-export policy_arn=arn:aws:iam::809980971988:policy/keda-sqs-policy 
+export policy_arn=arn:aws:iam::809980971988:policy/karpenter-sqs-policy 
 
 aws iam get-policy --policy-arn $policy_arn
 
 
 aws iam get-policy-version --policy-arn $policy_arn --version-id v1
 
+
 #Dummy test Configuring pods to use a Kubernetes service account
 #=====================================================
-cat >keda-pod-deployment.yaml <<EOF
+cat >karpenter-pod-deployment.yaml <<EOF
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: keda-app
+  name: karpenter-app
 spec:
   selector:
     matchLabels:
-      app: keda-app
+      app: karpenter-app
   template:
     metadata:
       labels:
-        app: keda-app
+        app: karpenter-app
     spec:
-      serviceAccountName: keda-service-account
+      serviceAccountName: karpenter-service-account
       containers:
-      - name: keda-app
+      - name: karpenter-app
         image: public.ecr.aws/nginx/nginx:1.21
 EOF
 
 kubectl apply -f my-deployment.yaml
 
-kubectl get pods | grep keda-app
+kubectl get pods | grep karpenter-app
 
 
-kubectl get pods -n keda | grep keda-operator-5d9d4d7964-5gg5m
+kubectl get pods -n $namespace | grep karpenter-operator-5d9d4d7964-5gg5m
 
-kubectl describe pod keda-operator-5d9d4d7964-5gg5m -n keda| grep AWS_ROLE_ARN:
-kubectl describe pod keda-operator-metrics-apiserver-76cd79b8c6-42m4v -n keda| grep AWS_ROLE_ARN:
+kubectl describe pod karpenter-operator-5d9d4d7964-5gg5m -n keda| grep AWS_ROLE_ARN:
+kubectl describe pod karpenter-operator-metrics-apiserver-76cd79b8c6-42m4v -n keda| grep AWS_ROLE_ARN:
 
-kubectl describe pod keda-operator-5d9d4d7964-5gg5m -n keda | grep AWS_WEB_IDENTITY_TOKEN_FILE:
+kubectl describe pod karpenter-operator-5d9d4d7964-5gg5m -n $namespace | grep AWS_WEB_IDENTITY_TOKEN_FILE:
 
-kubectl get deploy -n keda 
+kubectl get deploy -n $namespace 
 
-kubectl describe deployment keda-operator -n keda | grep "Service Account"
+kubectl describe deployment karpenter-operator -n $namespace | grep "Service Account"
 
-kubectl describe deployment keda-operator-metrics-apiserver  -n keda | grep "Service Account"
+kubectl describe deployment karpenter-operator-metrics-apiserver  -n $namespace | grep "Service Account"

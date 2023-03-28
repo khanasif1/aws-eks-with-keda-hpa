@@ -8,7 +8,7 @@ from datetime import datetime
 starttime = time.time()
 
 #queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/keda-queue"
-queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/keda-queue.fifo"
+queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/karpenter-queue.fifo"
         
 
 def receive_message():
@@ -64,7 +64,7 @@ def save_data(_message):
         _id=str(uuid.uuid1())
         print(f"id:{_id}")
         dynamodb = boto3.resource('dynamodb', region_name="us-west-1")
-        table = dynamodb.Table('payments')
+        table = dynamodb.Table('karpenterpayments')
         
         
         messageProcessingTime = datetime.utcnow() - datetime.strptime(jsonMessage["srcStamp"],date_format) 
@@ -89,7 +89,7 @@ def save_data(_message):
 
 while True:
     t = time.localtime()
-    time.sleep(1.0 - ((time.time() - starttime) % 1.0)) #sleep for 1 sec
+    time.sleep(1.0 - ((time.time() - starttime) % 1.0)) #sleep for  sec
     currenttime = time.strftime("%H:%M:%S", t)
     print(f"Start SQS Call : {currenttime}")
 
