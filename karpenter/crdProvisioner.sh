@@ -11,8 +11,8 @@ spec:
       operator: In
       values: ["spot"]
     - key: karpenter.k8s.aws/instance-size
-      operator: In
-      values: [large]
+      operator: NotIn
+      values: [nano, micro, small, medium, large]
   limits:
     resources:
       cpu: 1000

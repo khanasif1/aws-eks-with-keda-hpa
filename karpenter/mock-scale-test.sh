@@ -1,4 +1,4 @@
-cat <<EOF > inflate.yaml
+cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,12 +23,12 @@ spec:
               cpu: 1
               memory: 1.5Gi
 EOF
-kubectl apply -f inflate.yaml
+
 
 # Scale
 
 kubectl scale deployment inflate --replicas 1
 kubectl get deployment inflate 
 kubectl scale deployment inflate --replicas 50
-
+kubectl scale deployment inflate --replicas 0
 #kubectl delete deployment inflate
