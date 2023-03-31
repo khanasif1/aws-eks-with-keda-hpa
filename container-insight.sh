@@ -1,4 +1,4 @@
-ClusterName=eks-keda-scale
+ClusterName=eks-karpenter-scale
 RegionName=us-west-1
 FluentBitHttpPort='2020'
 FluentBitReadFromHead='Off'
