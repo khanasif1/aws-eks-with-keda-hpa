@@ -1,6 +1,10 @@
 #=========================================================================
 #https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html
 #========================================================================
+## SWITCH CLUSTER CONTEXT
+kubectl config use-context akaasif-Isengard@eks-keda-scale.us-west-1.eksctl.io 
+kubectl config use-context akaasif-Isengard@eks-karpenter-scale.us-west-1.eksctl.io   
+
 kubectl config set-context –current –namespace=keda
 #Configuring a Kubernetes service account to assume an IAM role
 
