@@ -7,7 +7,6 @@ from datetime import datetime
 # create a function to add numbers
 starttime = time.time()
 
-#queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/keda-queue"
 queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/karpenter-queue.fifo"
         
 
