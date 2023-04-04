@@ -1,4 +1,4 @@
-# eks-with-keda-hpa
+# EKS with KEDA HPA & Karpenter cluster autoscaler
 AWS Elastic Kubernetes with KEDA for horizontal pod autoscaling in conjunction with Karpenter for cluster scaling.
 
 
