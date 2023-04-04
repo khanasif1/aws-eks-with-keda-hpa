@@ -4,6 +4,7 @@
 <img src="https://img.shields.io/badge/AWS%20-%23FF9900.svg?&style=for-the-badge&logo=amazon-aws&logoColor=white"/> 
 <img src="https://img.shields.io/badge/docker%20-%230db7ed.svg?&style=for-the-badge&logo=docker&logoColor=white"/>
 </p>
+
 # EKS with KEDA HPA & Karpenter cluster autoscaler
 AWS Elastic Kubernetes with KEDA for horizontal pod autoscaling in conjunction with Karpenter for cluster scaling.
 
