@@ -14,7 +14,6 @@ KEDA is a K8s plug and play module for HPA that deeply integrates with any K8s f
 
 *** 
 
-
 <p align="center">
   <img  src="https://github.com/khanasif1/aws-eks-with-keda-hpa/blob/main/img/Keda.gif?raw=true">
 </p>

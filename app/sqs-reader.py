@@ -10,7 +10,8 @@ starttime = time.time()
 #queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/keda-queue"
 queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/keda-queue.fifo"
         
-
+#_id=str(uuid.uuid1())
+_id = "a3b01bb8-da7c-11ed-aae2-5227b566f9a7"
 def receive_message():
     try:
         print("Start fn receive message")
@@ -61,7 +62,7 @@ def save_data(_message):
         #current_dateTime = json.dumps(datetime.now(),default= str)
         date_format = '%Y-%m-%d %H:%M:%S.%f'
         current_dateTime = datetime.utcnow().strftime(date_format)
-        _id=str(uuid.uuid1())
+        
         print(f"id:{_id}")
         dynamodb = boto3.resource('dynamodb', region_name="us-west-1")
         table = dynamodb.Table('payments')

@@ -16,5 +16,5 @@ spec:
       serviceAccountName: keda-service-account-pod
       containers:
       - name: sqs-pull-app
-        image: khanasif1/sqs-reader:v0.7
+        image: khanasif1/sqs-reader:v0.8
         imagePullPolicy: Always
