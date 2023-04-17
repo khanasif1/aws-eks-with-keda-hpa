@@ -11,7 +11,5 @@ RUN  pip install boto3
 WORKDIR /usr/app/src
 
 COPY sqs-reader.py ./
-#COPY karpenter-sqs-reader.py ./
 
 CMD [ "python3", "./sqs-reader.py" ]
-#CMD [ "python3", "./karpenter-sqs-reader.py" ]

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Processing Time</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+      body {
+        background-color: #dbd6d6;
+      }
+      .container {
+        margin-top: 50px;
+      }
+      .number-box {
+        background-color: #74e657;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        padding: 30px;
+      }
+      .number-box2 {
+        background-color: #7e97f2;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        padding: 30px;
+      }
+      .number-label {
+        font-size: 30px;
+        color: #ffffff;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .separator {
+        border-left: 1px solid #ffffff;
+        height: 150px;
+        margin: auto;
+      }
+      .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid blue;
+        border-right: 16px solid green;
+        border-bottom: 16px solid red;
+        width: 50px;
+        height: 50px;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+      }
+
+      @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+    <script>
+      $(document).ready(function() {
+        $("#progress").css('visibility','visible');  
+        function getDataFromApi() {  
+          $("#progress").css('visibility','visible'); 
+            $.ajax({
+            url: 'https://w7vpip29qk.execute-api.us-west-1.amazonaws.com/default/keda-processing-counter?table=payments&key=a3b01bb8-da7c-11ed-aae2-5227b566f9a7',
+            type: 'GET',
+            success: function(data) {
+              $('#keda').html(data+' sec');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              console.log('Error: ' + textStatus);
+            }
+          });
+          $.ajax({
+            url: 'https://w7vpip29qk.execute-api.us-west-1.amazonaws.com/default/keda-processing-counter?table=karpenterpayments&key=1',
+            type: 'GET',
+            success: function(data) {
+              $('#karpenter').html(data+' sec');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              console.log('Error: ' + textStatus);
+            }
+          });
+          $("#progress").css('visibility','hidden');
+        }
+      // Refresh data every 5 seconds
+      setInterval(function() {
+        getDataFromApi();
+      }, 5000);
+      });
+
+
+      </script>
+  </head>
+  <body>
+    <div class="container"> 
+      <div class="row">
+        <!-- <div class="col-sm-12" style="visibility: hidden;" id="progress"><div class="loader"></div></div> -->
+        <div class="col-sm-6">
+          <div class="number-box">
+            <h2 class="number-label">KEDA & KARPENTER</h2>
+            <h1 class="display-1 text-center" id="keda"></h1>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="number-box2">
+            <h2 class="number-label">KARPENTER</h2>
+            <h1 class="display-1 text-center" id="karpenter"></h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
