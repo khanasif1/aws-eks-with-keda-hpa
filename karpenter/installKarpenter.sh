@@ -1,20 +1,23 @@
+#Change cluster context
+kubectl config use-context akaasif-Isengard@eks-demo-scale.us-west-2.eksctl.io
+kubectl config current-context 
 # Instances launched by Karpenter must run with an InstanceProfile that grants permissions necessary to run containers and configure networking.
 export AWS_REGION=us-west-1 
-aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${REGION}
+aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}
 # If you have login with docker in shell  execute below first
 docker logout public.ecr.aws
 
 TEMPOUT=$(mktemp)
-
+#1.
 curl -fsSL https://karpenter.sh/"${KARPENTER_VERSION}"/getting-started/getting-started-with-eksctl/cloudformation.yaml  > $TEMPOUT \
 && aws cloudformation deploy \
   --stack-name "Karpenter-${CLUSTER_NAME}" \
   --template-file "${TEMPOUT}" \
   --capabilities CAPABILITY_NAMED_IAM \
   --parameter-overrides "ClusterName=${CLUSTER_NAME}" \
-  --region ${REGION}
+  --region ${AWS_REGION}
 
-
+#3.
 #grant access to instances using the profile to connect to the cluster. This command adds the Karpenter node role to your aws-auth configmap, 
 #allowing nodes with this role to connect to the cluster.
 
