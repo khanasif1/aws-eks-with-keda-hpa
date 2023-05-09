@@ -16,5 +16,5 @@ spec:
       serviceAccountName: karpenter-service-account
       containers:
       - name: sqs-pull-app
-        image: khanasif1/karpenter-sqs-reader:v0.2
+        image: khanasif1/karpenter-sqs-reader:v0.3
         imagePullPolicy: Always

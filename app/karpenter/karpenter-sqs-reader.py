@@ -9,7 +9,7 @@ starttime = time.time()
 
 queue_url = "https://sqs.us-west-1.amazonaws.com/809980971988/karpenter-queue.fifo"
         
-
+_id = "42858670-ed46-11ed-bf74-4e9330d0530a"
 def receive_message():
     try:
         print("Start fn receive message")
@@ -60,7 +60,7 @@ def save_data(_message):
         #current_dateTime = json.dumps(datetime.now(),default= str)
         date_format = '%Y-%m-%d %H:%M:%S.%f'
         current_dateTime = datetime.utcnow().strftime(date_format)
-        _id=str(uuid.uuid1())
+        #_id=str(uuid.uuid1())
         print(f"id:{_id}")
         dynamodb = boto3.resource('dynamodb', region_name="us-west-1")
         table = dynamodb.Table('karpenterpayments')

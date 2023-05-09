@@ -46,15 +46,3 @@ kubectt logt -f sqs-app-597c4bf64d-d5d4t -n keda-test
 #******KARPENTER -Deploy python app - it reads the SQS  and put message in dynamo******
 kubectl apply -f deployment/karpenter-python-app.yaml
 #kubectl delete deployment sqs-app  -n karpenter-test  
-
-
-
-#HPA
-kubectl autoscale deployment sqs-app --namespace karpenter-test --cpu-percent=10 --min=1 --max=20
-
-kubectl get hpa --namespace karpenter-test
-kubectl delete hpa sqs-app --namespace karpenter-test
-
-kubectl scale deployment sqs-app --namespace karpenter-test --replicas 1
-
-kubectl top pod --namespace karpenter-test

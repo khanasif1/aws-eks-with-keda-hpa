@@ -72,7 +72,7 @@
             }
           });
           $.ajax({
-            url: 'https://w7vpip29qk.execute-api.us-west-1.amazonaws.com/default/keda-processing-counter?table=karpenterpayments&key=1',
+            url: 'https://w7vpip29qk.execute-api.us-west-1.amazonaws.com/default/keda-processing-counter?table=karpenterpayments&key=42858670-ed46-11ed-bf74-4e9330d0530a',
             type: 'GET',
             success: function(data) {
               $('#karpenter').html(data+' sec');
@@ -99,13 +99,13 @@
         <div class="col-sm-6">
           <div class="number-box">
             <h2 class="number-label">KEDA & KARPENTER</h2>
-            <h1 class="display-1 text-center" id="keda"></h1>
+            <h4 class="display-4 text-center" id="keda"></h4>
           </div>
         </div>
         <div class="col-sm-6">
           <div class="number-box2">
             <h2 class="number-label">KARPENTER</h2>
-            <h1 class="display-1 text-center" id="karpenter"></h1>
+            <h4 class="display-4 text-center" id="karpenter"></h4>
           </div>
         </div>
       </div>
